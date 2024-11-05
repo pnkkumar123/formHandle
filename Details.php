@@ -1,74 +1,62 @@
 <?php
-session_start();
-include 'header.php';
+// Include database connection file
+require_once 'db.php';
 
-function error($val) {
-    // if I used echo, variable are set to null therefore I used return
-    return isset($_SESSION[$val]) ? $_SESSION[$val] : '';
+$message = ""; // Message to display feedback
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data
+    $username = trim($_POST["username"]);
+    $email = trim($_POST["email"]);
+    $password = trim($_POST["password"]);
+
+    // Hash the password for security
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Prepare SQL statement to insert user data
+    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+    // Execute the statement
+    if ($stmt->execute()) {
+        $message = "Signup successful!";
+        header("Location:login.php");
+    } else {
+        $message = "Error: " . $stmt->error;
+    }
+
+    // Close the statement
+    $stmt->close();
 }
 
-// Retrieve error messages
-$name_error = error('name_error');
-$email_error = error('email_error');
-$password_error = error('password_error');
-$mobile_error = error('mobile_error');
-$username_error = error('username_error');
-
-unset($_SESSION['name_error']);
-unset($_SESSION['password_error']);
-unset($_SESSION['mobile_error']);
-unset($_SESSION['username_error']);
-unset($_SESSION['password_error']);
+// Close the connection
+$conn->close();
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup Page</title>
+</head>
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center">User Details Form</h2>
-        <form action="DetailSubmit.php" method="POST">
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" name="name" id="name" class="form-control" required>
-                <?php if ($name_error): ?>
-                    <div class="text-danger"><?php echo htmlspecialchars($name_error); ?></div>
-                <?php endif; ?>
-            </div>
-            
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" class="form-control" required>
-                <?php if ($email_error): ?>
-                    <div class="text-danger"><?php echo htmlspecialchars($email_error); ?></div>
-                <?php endif; ?>
-            </div>
-            
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
-                <?php if ($password_error): ?>
-                    <div class="text-danger"><?php echo htmlspecialchars($password_error); ?></div>
-                <?php endif; ?>
-            </div>
-            
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" name="username" id="username" class="form-control" required>
-                <?php if ($username_error): ?>
-                    <div class="text-danger"><?php echo htmlspecialchars($username_error); ?></div>
-                <?php endif; ?>
-            </div>
-            
-            <div class="mb-3">
-                <label for="mobile" class="form-label">Mobile</label>
-                <input type="text" name="mobile" id="mobile" class="form-control" required>
-                <?php if ($mobile_error): ?>
-                    <div class="text-danger"><?php echo htmlspecialchars($mobile_error); ?></div>
-                <?php endif; ?>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
+    <h2>Signup</h2>
+    <?php if ($message) : ?>
+        <p><?php echo $message; ?></p>
+    <?php endif; ?>
+    
+    <form action="Details.php" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required><br><br>
 
-<?php
-include 'footer.php';
-?>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required><br><br>
+
+        <button type="submit">Signup</button>
+    </form>
+</body>
+</html>

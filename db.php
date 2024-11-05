@@ -3,7 +3,7 @@
 $servername="localhost";
 $username_db="root";
 $password_db="";
-$database="details";
+$database="formcrud";
 
 
 // create db connection
