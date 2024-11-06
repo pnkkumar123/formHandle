@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $user['username'];  // Store username in session
             
             // Redirect to the protected page
-            header("Location: viewdata.php");
+            header("Location: /forms/product/view-product.php");
             exit();
         } else {
             $error = "Invalid password";

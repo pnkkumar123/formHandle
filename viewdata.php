@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include 'db.php';
-include 'header.php';
+// include 'header.php';
 
 // Query to fetch all users
 $sql = "SELECT id, username, email FROM users";

@@ -9,19 +9,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST["username"]);
     $email = trim($_POST["email"]);
     $password = trim($_POST["password"]);
+    $role = trim($_POST["role"]); // Get the role from the form
 
     // Hash the password for security
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Prepare SQL statement to insert user data
-    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    // Prepare SQL statement to insert user data with role
+    $sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $username, $email, $hashed_password);
+    $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
 
     // Execute the statement
     if ($stmt->execute()) {
         $message = "Signup successful!";
-        header("Location:login.php");
+        header("Location: login.php");
     } else {
         $message = "Error: " . $stmt->error;
     }
@@ -55,6 +56,13 @@ $conn->close();
 
         <label for="password">Password:</label>
         <input type="password" name="password" id="password" required><br><br>
+
+        <!-- Add a dropdown for selecting the role -->
+        <label for="role">Role:</label>
+        <select name="role" id="role" required>
+            <option value="consumer">Consumer</option>
+            <option value="seller">Seller</option>
+        </select><br><br>
 
         <button type="submit">Signup</button>
     </form>

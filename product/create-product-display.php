@@ -1,4 +1,13 @@
 <?php
+session_start();
+
+// check if the user is logged in 
+
+if(!isset($_SESSION['user_id'])){
+    // if the user is not logged in ,redirect to the loggin page
+    header("Location:../login.php");
+    exit();
+}
 // include db connection file
 require_once '../db.php';
 $message="";
@@ -11,11 +20,11 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
     $category=trim($_POST["category"]);
     $price=trim($_POST["price"]);
     $brand=trim($_POST["brand"]);
-
+    $user_id=$_SESSION['user_id'];
     // prepare sql statement to insert product data
-    $sql = "INSERT INTO products (name,description,quantity,category,price,brand) VALUES (?,?,?,?,?,?)";
+    $sql = "INSERT INTO products (name,description,quantity,category,price,brand,user_id) VALUES (?,?,?,?,?,?,?)";
     $stmt=$conn->prepare($sql);
-    $stmt->bind_param("ssssss",$name,$description,$quantity,$category,$price,$brand);
+    $stmt->bind_param("ssisssi",$name,$description,$quantity,$category,$price,$brand,$user_id);
 
     // execute the statement
     if($stmt->execute()){
