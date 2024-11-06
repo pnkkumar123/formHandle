@@ -13,6 +13,24 @@ include '../header.php';
 
 $user_id = $_SESSION['user_id'];  // The user_id from the session
 
+// Query to fetch user details including thier role
+$sql = "SELECT role FROM users WHERE id = ?";
+$stmt=$conn->prepare($sql);
+$stmt->bind_param("i",$user_id);
+$stmt->execute();
+$stmt->bind_result($role);
+$stmt->fetch();
+
+// check if the user has the selller role
+
+if($role !== 'seller'){
+    // if the user is not a seller,redirect to the home page
+    header("Location:../unauthorized.php");
+    exit();
+}
+
+
+
 // Query to fetch products belonging to the logged-in user
 $sql = "SELECT * FROM products WHERE user_id = ?";
 $stmt = $conn->prepare($sql);
@@ -22,14 +40,10 @@ $result = $stmt->get_result();  // Get the result set
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products</title>
-</head>
-<body>
+<?php
+include('header.php');
+include('navbar.php');
+?>
     <div class="container">
         <h2>Products</h2>
         <a href="create-product-display.php" class="btn btn-primary btn-sm">Create Product</a>

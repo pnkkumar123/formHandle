@@ -5,20 +5,14 @@ include 'db.php';
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products</title>
-    <!-- Add Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-4">
+<?php
+include('header.php');
+include('navbar.php');
+?>
+    <div class="container mt-5 top-5">
         <h2>Products</h2>
-        
-        <div class="row">
+       
+        <div class="row mt-5">
             <?php if ($result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <div class="col-md-4 mb-4">
@@ -53,10 +47,9 @@ $result = $conn->query($sql);
     </div>
 
     <!-- Add Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    
 
 <?php
+include('footer.php');
 $conn->close();
 ?>

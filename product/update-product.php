@@ -13,6 +13,22 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // Get the logged-in user's ID
 
+// Check if the user is a seller (assuming the 'role' column exists in the 'users' table)
+$sql = "SELECT role FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$stmt->bind_result($role);
+$stmt->fetch();
+$stmt->close();
+
+// If the user is not a seller, redirect to an unauthorized page
+if ($role !== 'seller') {
+    // Redirect to an unauthorized page or show an error message
+    header("Location: unauthorized.php");  // Customize this page as needed
+    exit();
+}
+
 // Check if the form is submitted for update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $id = $_POST['id'];
@@ -62,15 +78,12 @@ if (isset($_GET['id'])) {
 
 $conn->close();
 ?>
+<?php
+include('header.php');
+include('navbar.php');
+?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Product</title>
-</head>
-<body>
+
     <h1>Update Product</h1>
     <?php if ($message) : ?>
         <p><?php echo $message; ?></p>
